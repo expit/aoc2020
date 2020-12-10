@@ -1,4 +1,6 @@
 #!/usr/bin/awk -f
+# listadd creates sorted list,
+# every element points at the next element
 func listadd(new,old,   tmp){
   tmp=a[old]
   a[old]=new
@@ -34,14 +36,33 @@ END{
   }
 
   #part 2
-  n=1
-  p=0
+  n=1 # number of permutations
+  p=0 # consecutive numbers of elements that differs by one
   for(i=0;i<last;){
-    p++
+    p++ # increment number of consecutive numbers
+
+    # different combinations are possible only if elements differ by 1
     if(a[i]-i==3){
+      # Element can be removed only when element before and after have joltage differences of 1 or 2
+      # if the sequence of consecutive numbers that differs by 1 is:
+      # 2 then no element can be removed
+      # 3 or 4, then any the elements in the middle can be removed
       if (p==4||p==3 ){
         n*=2^(p-2)
       }
+      # for sequences longer than 5 there is a risk of creating difference of more than 3 jolts
+      # (binary representation of elements (removed marked as 1)
+      # 00000
+      # 00010
+      # 00100
+      # 00110
+      # 01000
+      # 01010
+      # 01100
+      # 01110  # this situation will create difference in joltage of 4
+      # 
+      # math formula to count 3 and more consecutive numbers in subset is 3^x - 3^(x-1) + 1
+      # where x+1 is number of elements suitable to be removed
       if (p>4){
   	n*=3^(p-3)-3^(p-4)+1
       }
